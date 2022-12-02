@@ -12,6 +12,7 @@ public class WordNet {
     private ST<String, Integer> synsets;
 
     public WordNet(String synsets, String hypernyms) {
+
         if (synsets == null)
             throw new IllegalArgumentException();
         if (hypernyms == null)
@@ -24,7 +25,9 @@ public class WordNet {
         int i = 0;
         for (String line : synsetFile.readAllLines()) {
             s = Arrays.stream(line.split(",")).toArray()[1].toString();
-            this.synsets.put(s, i++);
+            for (String word : s.split(" "))
+                this.synsets.put(word, i);
+            i++;
         }
 
         G = new Digraph(i);
@@ -39,6 +42,7 @@ public class WordNet {
             }
         }
 
+       
     }
 
     // returns all WordNet nouns
@@ -68,8 +72,7 @@ public class WordNet {
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wn = new WordNet("synsets.txt", "hypernyms.txt");
-        for (String s : wn.nouns())
-            StdOut.println(s);
-
+        StdOut.println(wn.synsets.get("Abrocoma"));
+        StdOut.println(wn.synsets.get("genus_Abrocoma"));
     }
 }
