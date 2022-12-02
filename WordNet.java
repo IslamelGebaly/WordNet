@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.ST;
-import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
 
@@ -65,6 +64,8 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
+        if (word == null)
+            throw new IllegalArgumentException();
         return synsets.get(word) == null ? false : true;
     }
 
@@ -79,13 +80,15 @@ public class WordNet {
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
+        if (!this.isNoun(nounA) || !this.isNoun(nounB))
+            throw new IllegalArgumentException();
+
         return "";
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wn = new WordNet("synsets.txt", "hypernyms.txt");
-        StdOut.println(wn.synsets.get("Abrocoma"));
-        StdOut.println(wn.synsets.get("genus_Abrocoma"));
+        wn.sap(null, "ns");
     }
 }
