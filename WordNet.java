@@ -11,6 +11,18 @@ public class WordNet {
     private Digraph G;
     private ST<String, Integer> synsets;
 
+    private boolean isRooted() {
+        boolean rootFound = false;
+        for (int v = 0; v < G.V(); v++) {
+            if (G.outdegree(v) == 0 && !rootFound) {
+                rootFound = true;
+            } else if (rootFound) {
+                return false;
+            }
+        }
+        return rootFound;
+    }
+
     public WordNet(String synsets, String hypernyms) {
 
         if (synsets == null)
@@ -42,7 +54,8 @@ public class WordNet {
             }
         }
 
-       
+        if (!isRooted())
+            throw new IllegalArgumentException();
     }
 
     // returns all WordNet nouns
