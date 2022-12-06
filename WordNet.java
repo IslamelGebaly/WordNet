@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 public class WordNet {
 
-    // constructor takes the name of the two input files
     private Digraph G;
     private ST<String, Integer> nouns;
     private ArrayList<String> synsets;
@@ -30,8 +29,12 @@ public class WordNet {
         return this.synsets.get(id);
     }
 
+    // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
 
+        //Handling corner cases
+        //If the one or both arguements are null
+        //then the program will throw an illegal arguement exception
         if (synsets == null)
             throw new IllegalArgumentException();
         if (hypernyms == null)
@@ -41,8 +44,8 @@ public class WordNet {
         In hypernymFile = new In(hypernyms);
         this.nouns = new ST<String, Integer>();
         this.synsets = new ArrayList<String>();
-        String s;
 
+        String s;
         int i = 0;
         for (String line : synsetFile.readAllLines()) {
             s = Arrays.stream(line.split(",")).toArray()[1].toString();
@@ -77,14 +80,14 @@ public class WordNet {
     public boolean isNoun(String word) {
         if (word == null)
             throw new IllegalArgumentException();
-        return this.nouns.get(word) == null ? false : true;
+        return this.nouns.contains(word);
     }
 
     // distance between nounA and nounB (defined below)
     public int distance(String nounA, String nounB) {
         if (!this.isNoun(nounA) || !this.isNoun(nounB))
             throw new IllegalArgumentException();
-
+        
 
         return 0;
     }
