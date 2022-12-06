@@ -3,13 +3,14 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.ST;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class WordNet {
 
     private Digraph G;
-    private ST<String, Integer> synsetLookup;
-    String[] synsets;
+    private ST<String, Integer> nouns;
+    private ArrayList<String> synsets;
 
     private boolean isRooted() {
         boolean rootFound = false;
@@ -22,6 +23,10 @@ public class WordNet {
             }
         }
         return rootFound;
+    }
+
+    private String getSynset(int id) {
+        return this.synsets.get(id);
     }
 
     // constructor takes the name of the two input files
@@ -37,23 +42,26 @@ public class WordNet {
 
         In synsetFile = new In(synsets);
         In hypernymFile = new In(hypernyms);
-        this.synsetLookup = new ST<String, Integer>();
-        this.synsets = synsetFile.readAllLines();
+        this.nouns = new ST<String, Integer>();
+        this.synsets = new ArrayList<String>();
 
         String s;
-        for (int i = 0; i < this.synsets.length; i++) {
-            s = Arrays.stream(this.synsets[i].split(",")).toArray()[1].toString();
-            synsetLookup.put(s, i);
+        int i = 0;
+        for (String line : synsetFile.readAllLines()) {
+            s = Arrays.stream(line.split(",")).toArray()[1].toString();
+            this.synsets.add(s);
+            for (String word : s.split(" "))
+                this.nouns.put(word, i);
             i++;
         }
 
-        G = new Digraph(this.synsets.length);
+        G = new Digraph(i);
         int v, w;
         String[] temp;
         for (String line : hypernymFile.readAllLines()) {
             temp = line.split(",");
             v = Integer.parseInt(temp[0]);
-            for (int i = 1; i < temp.length; i++) {
+            for (i = 1; i < temp.length; i++) {
                 w = Integer.parseInt(temp[i]);
                 G.addEdge(v, w);
             }
@@ -62,18 +70,19 @@ public class WordNet {
         if (!isRooted())
             throw new IllegalArgumentException();
 
+
     }
 
     // returns all WordNet nouns
     public Iterable<String> nouns() {
-        return this.synsetLookup.keys();
+        return this.nouns.keys();
     }
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
         if (word == null)
             throw new IllegalArgumentException();
-        return this.synsetLookup.contains(word);
+        return this.nouns.contains(word);
     }
 
     // distance between nounA and nounB (defined below)
@@ -81,7 +90,7 @@ public class WordNet {
         if (!this.isNoun(nounA) || !this.isNoun(nounB))
             throw new IllegalArgumentException();
         SAP sap = new SAP(G);
-        return sap.length(synsetLookup.get(nounA), synsetLookup.get(nounB));
+        return sap.length(nouns.get(nounA), nouns.get(nounB));
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -91,13 +100,14 @@ public class WordNet {
             throw new IllegalArgumentException();
 
         SAP sap = new SAP(G);
-        int vertix = sap.ancestor(synsetLookup.get(nounA), synsetLookup.get(nounB));
-        return synsets[vertix];
+        int vertix = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
+        return synsets.get(vertix);
     }
 
     // do unit testing of this class
     public static void main(String[] args) {
         WordNet wn = new WordNet("synsets.txt", "hypernyms.txt");
-        StdOut.println(wn.distance("water", "waterfront"));
+
+        StdOut.println(wn.getSynset(83));
     }
 }

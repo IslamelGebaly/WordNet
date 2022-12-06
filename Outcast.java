@@ -28,6 +28,8 @@ public class Outcast {
         for (int i = 0; i < nouns.length; i++) {
             d = 0;
             for (int j = 0; j < nouns.length; j++) {
+                if (i == j)
+                    continue;
                 d += wordnet.distance(nouns[i], nouns[j]);
             }
 
