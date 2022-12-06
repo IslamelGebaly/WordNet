@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.ST;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +6,7 @@ import java.util.Arrays;
 public class WordNet {
 
     private Digraph G;
-    private ST<String, Integer> nouns;
+    private ST<String, Bag<Integer>> nouns;
     private ArrayList<String> synsets;
 
     private boolean isRooted() {
@@ -42,20 +39,28 @@ public class WordNet {
 
         In synsetFile = new In(synsets);
         In hypernymFile = new In(hypernyms);
-        this.nouns = new ST<String, Integer>();
+        this.nouns = new ST<>();
         this.synsets = new ArrayList<String>();
 
         String s;
+        Bag<Integer> bag;
         int i = 0;
         for (String line : synsetFile.readAllLines()) {
             s = Arrays.stream(line.split(",")).toArray()[1].toString();
             this.synsets.add(s);
-            for (String word : s.split(" "))
-                this.nouns.put(word, i);
+            for (String word : s.split(" ")) {
+                if (this.nouns.contains(word))
+                    this.nouns.get(word).add(i);
+                else {
+                    bag = new Bag<>();
+                    bag.add(i);
+                    this.nouns.put(word, bag);
+                }
+            }
             i++;
         }
 
-        G = new Digraph(i);
+        G = new Digraph(this.synsets.size());
         int v, w;
         String[] temp;
         for (String line : hypernymFile.readAllLines()) {
