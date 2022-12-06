@@ -69,6 +69,8 @@ public class WordNet {
 
         if (!isRooted())
             throw new IllegalArgumentException();
+
+
     }
 
     // returns all WordNet nouns
@@ -87,9 +89,8 @@ public class WordNet {
     public int distance(String nounA, String nounB) {
         if (!this.isNoun(nounA) || !this.isNoun(nounB))
             throw new IllegalArgumentException();
-        
-
-        return 0;
+        SAP sap = new SAP(G);
+        return sap.length(nouns.get(nounA), nouns.get(nounB));
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -98,8 +99,9 @@ public class WordNet {
         if (!this.isNoun(nounA) || !this.isNoun(nounB))
             throw new IllegalArgumentException();
 
-
-        return "";
+        SAP sap = new SAP(G);
+        int vertix = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
+        return synsets.get(vertix);
     }
 
     // do unit testing of this class
