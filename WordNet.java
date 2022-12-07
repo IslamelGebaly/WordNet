@@ -1,11 +1,14 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 
 public class WordNet {
 
     private final Digraph G;
-    private final ST<String, Bag<Integer>> nouns;
+    private final ST<String, ArrayList<Integer>> nouns;
     private final ArrayList<String> synsets;
 
     private boolean isRooted() {
@@ -30,7 +33,7 @@ public class WordNet {
         In in = new In(synsetFile);
 
         String synset;
-        Bag<Integer> bag;
+        ArrayList<Integer> idList;
         int id;
         String[] temp;
 
@@ -44,9 +47,9 @@ public class WordNet {
                 if (this.nouns.contains(word))
                     this.nouns.get(word).add(id);
                 else {
-                    bag = new Bag<>();
-                    bag.add(id);
-                    this.nouns.put(word, bag);
+                    idList = new ArrayList<>();
+                    idList.add(id);
+                    this.nouns.put(word, idList);
                 }
             }
         }
