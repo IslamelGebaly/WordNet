@@ -12,6 +12,10 @@ public class SAP {
         this.paths = new int[G.V()][2];
     }
 
+    private void bfs(int v) {
+        Queue<Integer> q = new Queue<>();
+    }
+
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
 
