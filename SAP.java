@@ -14,6 +14,10 @@ public class SAP {
 
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
+
+        if (v < 0 || v > G.V() || w < 0 || w > G.V())
+            throw new IllegalArgumentException();
+
         int minPath = Integer.MAX_VALUE;
         boolean pathFound = false;
 
@@ -73,6 +77,9 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
+        if (v < 0 || v > G.V() || w < 0 || w > G.V())
+            throw new IllegalArgumentException();
+
         Queue<Integer> q;
 
         int pathLength = length(v, w);
@@ -97,6 +104,9 @@ public class SAP {
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null)
+            throw new IllegalArgumentException();
+
         int minLength = Integer.MAX_VALUE;
         boolean pathFound = false;
         int l;
@@ -115,6 +125,9 @@ public class SAP {
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null)
+            throw new IllegalArgumentException();
+
         Queue<Integer> q;
 
         int pathLength = length(v, w);
@@ -141,6 +154,7 @@ public class SAP {
 
     // do unit testing of this class
     public static void main(String[] args) {
+
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);

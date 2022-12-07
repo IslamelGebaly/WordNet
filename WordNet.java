@@ -1,13 +1,12 @@
 import edu.princeton.cs.algs4.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class WordNet {
 
-    private Digraph G;
-    private ST<String, Bag<Integer>> nouns;
-    private ArrayList<String> synsets;
+    private final Digraph G;
+    private final ST<String, Bag<Integer>> nouns;
+    private final ArrayList<String> synsets;
 
     private boolean isRooted() {
         boolean rootFound = false;
@@ -22,8 +21,51 @@ public class WordNet {
         return rootFound;
     }
 
-    private String getSynset(int id) {
-        return this.synsets.get(id);
+    private void readSynsetFile(String synsetFile) {
+        ///Reads Synset file and fills the synset list and the noun symbol table
+        ///Synsets are added directly as is without spliting to the synset list
+        ///The synset is split into its component words. Each word is a key that is
+        // associated with multiple ids.
+
+        In in = new In(synsetFile);
+
+        String synset;
+        Bag<Integer> bag;
+        int id;
+        String[] temp;
+
+        for (String line : in.readAllLines()) {
+            temp = line.split(",");
+            id = Integer.parseInt(temp[0]);
+            synset = temp[1];
+            this.synsets.add(synset);
+
+            for (String word : synset.split(" ")) {
+                if (this.nouns.contains(word))
+                    this.nouns.get(word).add(id);
+                else {
+                    bag = new Bag<>();
+                    bag.add(id);
+                    this.nouns.put(word, bag);
+                }
+            }
+        }
+    }
+
+    private void readHyperNymFile(String hypernymFile) {
+        ///Uses hypernym file to define edges between vertices
+        In in = new In(hypernymFile);
+
+        int v, w;
+        String[] temp;
+        for (String line : in.readAllLines()) {
+            temp = line.split(",");
+            v = Integer.parseInt(temp[0]);
+            for (int i = 1; i < temp.length; i++) {
+                w = Integer.parseInt(temp[i]);
+                this.G.addEdge(v, w);
+            }
+        }
     }
 
     // constructor takes the name of the two input files
@@ -37,44 +79,17 @@ public class WordNet {
         if (hypernyms == null)
             throw new IllegalArgumentException();
 
-        In synsetFile = new In(synsets);
-        In hypernymFile = new In(hypernyms);
         this.nouns = new ST<>();
         this.synsets = new ArrayList<String>();
 
-        String s;
-        Bag<Integer> bag;
-        int i = 0;
-        for (String line : synsetFile.readAllLines()) {
-            s = Arrays.stream(line.split(",")).toArray()[1].toString();
-            this.synsets.add(s);
-            for (String word : s.split(" ")) {
-                if (this.nouns.contains(word))
-                    this.nouns.get(word).add(i);
-                else {
-                    bag = new Bag<>();
-                    bag.add(i);
-                    this.nouns.put(word, bag);
-                }
-            }
-            i++;
-        }
+        readSynsetFile(synsets);
 
-        G = new Digraph(this.synsets.size());
-        int v, w;
-        String[] temp;
-        for (String line : hypernymFile.readAllLines()) {
-            temp = line.split(",");
-            v = Integer.parseInt(temp[0]);
-            for (i = 1; i < temp.length; i++) {
-                w = Integer.parseInt(temp[i]);
-                G.addEdge(v, w);
-            }
-        }
+        this.G = new Digraph(this.synsets.size());
+
+        readHyperNymFile(hypernyms);
 
         if (!isRooted())
             throw new IllegalArgumentException();
-
 
     }
 
@@ -106,6 +121,8 @@ public class WordNet {
 
         SAP sap = new SAP(G);
         int vertix = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
+        if (vertix == -1)
+            return "-1";
         return synsets.get(vertix);
     }
 
@@ -113,6 +130,6 @@ public class WordNet {
     public static void main(String[] args) {
         WordNet wn = new WordNet("synsets.txt", "hypernyms.txt");
 
-        StdOut.println(wn.getSynset(83));
+        StdOut.println(wn.sap("fluid", "liquid"));
     }
 }
