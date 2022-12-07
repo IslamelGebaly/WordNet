@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.*;
 
 public class SAP {
     // constructor takes a digraph (not necessarily a DAG)
-    private Digraph G;
+    private final Digraph G;
     private boolean[][] visited;
     private int[][] paths;
 
@@ -10,10 +10,6 @@ public class SAP {
         this.G = G;
         this.visited = new boolean[G.V()][2];
         this.paths = new int[G.V()][2];
-    }
-
-    private void bfs(int v) {
-        Queue<Integer> q = new Queue<>();
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
